@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 import Lista from './components/Lista'
 import Resumo from './components/Resumo'
@@ -30,6 +32,10 @@ function App() {
     })
   }
 
+  const limparVenda = () => {
+    setItensSelecionados([])
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-100 to-yellow-200 text-slate-900">
       <Header />
@@ -43,10 +49,29 @@ function App() {
             />
           </div>
           <div style={{width: '450px'}}>
-            <Resumo itensSelecionados={itensSelecionados} />
+            <Resumo 
+              itensSelecionados={itensSelecionados} 
+              onFinalizarAtendimento={limparVenda}
+            />
           </div>
         </div>
       </main>
+      
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{
+          fontFamily: 'Poppins, sans-serif'
+        }}
+      />
     </div>
   )
 }

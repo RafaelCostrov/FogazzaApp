@@ -5,6 +5,7 @@ from route.fogazza_route import fogazza_bp
 from route.atendimento_route import atendimento_bp
 
 app = Flask(__name__)
+CORS(app) 
 
 app.register_blueprint(fogazza_bp)
 app.register_blueprint(atendimento_bp)
