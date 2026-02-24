@@ -164,11 +164,15 @@ class AtendimentoService():
             p.text(atendimento.comprado_em.strftime(
                 "%d/%m/%Y %H:%M") + "\n\n")
             p.set(align='center', custom_size=True, width=2, height=2)
-            p.text(f"Pedido: {atendimento.id_atendimento}\n\n")
+            p.text(f"Pedido: {atendimento.id_atendimento}\n")
             # p.text("-" * 16 + "\n")
+            p.set(custom_size=True, width=1, height=1, bold=False)
+            if atendimento.viagem:
+                p.text("Viagem: SIM\n\n")
+            else:
+                p.text("Viagem: NAO\n\n")
 
             p.set(align='left')
-            p.set(custom_size=True, width=1, height=1, bold=False)
             for item in atendimento.itens:
                 nome = item.fogazza.nome_fogazza.capitalize()
                 qty = str(item.quantidade)
