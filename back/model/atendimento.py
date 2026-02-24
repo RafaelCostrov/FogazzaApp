@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Enum, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, Enum, ForeignKey, Float, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from enums.tipo_cliente import TipoCliente
 from db.db import Base
@@ -23,5 +23,6 @@ class Atendimento(Base):
     tipo_cliente = Column(Enum(TipoCliente), nullable=False)
     preco_total = Column(Float, nullable=False)
     comprado_em = Column(DateTime, nullable=False)
+    viagem = Column(Boolean)
 
     itens = relationship("AtendimentoFogazza", cascade="all, delete-orphan")

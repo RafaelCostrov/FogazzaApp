@@ -13,8 +13,9 @@ def adicionar_atendimento():
         data = request.get_json()
         tipo_cliente = data.get('tipo_cliente')
         fogazzas = data.get('fogazzas')
+        viagem = data.get('viagem')
         resultado = atendimento_service.adicionar_atendimento(
-            tipo_cliente=tipo_cliente, fogazzas=fogazzas)
+            tipo_cliente=tipo_cliente, fogazzas=fogazzas, viagem=viagem)
         return jsonify(resultado), 201
     except Exception as e:
         return jsonify({"erro": str(e)}), 400

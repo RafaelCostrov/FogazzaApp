@@ -14,7 +14,7 @@ class AtendimentoService():
     repositorio = AtendimentoRepository()
     repositorio_fogazza = FogazzaRepository()
 
-    def adicionar_atendimento(self, tipo_cliente, fogazzas):
+    def adicionar_atendimento(self, tipo_cliente, fogazzas, viagem):
         try:
             preco_final = 0
             itens = []
@@ -38,7 +38,8 @@ class AtendimentoService():
                 tipo_cliente=tipo_cliente,
                 preco_total=preco_final,
                 comprado_em=comprado_em,
-                itens=itens
+                itens=itens,
+                viagem=viagem
             )
             atendimento = self.repositorio.adicionar_atendimento(atendimento)
             return {
@@ -46,6 +47,7 @@ class AtendimentoService():
                 "tipo_cliente": atendimento.tipo_cliente.value,
                 "preco_total": atendimento.preco_total,
                 "comprado_em": atendimento.comprado_em.strftime("%Y-%m-%d %H:%M:%S"),
+                "viagem": atendimento.viagem,
                 "itens": [
                     {
                         "id_fogazza": item.id_fogazza,
