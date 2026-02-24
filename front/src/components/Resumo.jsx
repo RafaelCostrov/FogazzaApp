@@ -30,7 +30,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
       toast.error('Por favor, selecione o tipo de cliente.')
       return
     }
-    
+
     if (totalItens === 0) {
       toast.error('Adicione pelo menos um item ao atendimento.')
       return
@@ -38,7 +38,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
 
     try {
       setCarregando(true)
-      
+
       const fogazzasData = itensSelecionados
         .filter(item => item.quantidade > 0)
         .map(item => ({
@@ -48,14 +48,15 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
 
       const atendimentoData = {
         tipo_cliente: tipoCliente,
-        fogazzas: fogazzasData
+        fogazzas: fogazzasData,
+        viagem: paraViagem
       }
 
       const response = await atendimentoService.adicionar(atendimentoData)
-      
+
       setAtendimentoFinalizado(response)
       setModalAberto(true)
-      
+
       toast.info('Enviando para impressão...')
       try {
         await atendimentoService.imprimir(response.id_atendimento)
@@ -64,7 +65,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
         console.error('Erro ao imprimir:', printError)
         toast.warning('Atendimento salvo, mas houve erro na impressão. Verifique a impressora.')
       }
-      
+
     } catch (error) {
       console.error('Erro ao finalizar atendimento:', error)
       toast.error('Erro ao finalizar atendimento. Tente novamente.')
@@ -76,12 +77,12 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
   const fecharModal = () => {
     setModalAberto(false)
     setAtendimentoFinalizado(null)
-    
+
     // Limpar dados do atendimento
     if (onFinalizarAtendimento) {
       onFinalizarAtendimento(atendimentoFinalizado)
     }
-    
+
     setTipoCliente('')
     setValorRecebido('')
     setParaViagem(false)
@@ -113,7 +114,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
 
         <div className="flex justify-between">
           <span className="text-slate-600">Tipo de cliente:*</span>
-          <select 
+          <select
             value={tipoCliente}
             onChange={(e) => setTipoCliente(e.target.value)}
             className=" w-32 border-2 border-slate-300 rounded-lg p-1 focus:outline-none focus:border-green-igreja"
@@ -125,15 +126,15 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
           </select>
         </div>
 
-         <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <span className="text-slate-600">É para viagem?</span>
-          <IconCheckboxes 
+          <IconCheckboxes
             checked={paraViagem}
             onChange={(e) => setParaViagem(e.target.checked)}
           />
         </div>
-  
-        <div className="flex justify-between">  
+
+        <div className="flex justify-between">
           <span className="text-slate-600">Total:</span>
           <span className="font-bold text-red-igreja">{totalItens}</span>
         </div>
@@ -167,7 +168,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
           </span>
         </div>
 
-        
+
 
         <button
           onClick={finalizarAtendimento}
@@ -179,7 +180,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
       </div>
 
       {/* Modal de Atendimento */}
-      <ModalImpressao 
+      <ModalImpressao
         isOpen={modalAberto}
         onClose={fecharModal}
         atendimento={atendimentoFinalizado}
