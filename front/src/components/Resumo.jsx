@@ -48,7 +48,8 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
 
       const atendimentoData = {
         tipo_cliente: tipoCliente,
-        fogazzas: fogazzasData
+        fogazzas: fogazzasData,
+        viagem: paraViagem
       }
 
       const response = await atendimentoService.adicionar(atendimentoData)
