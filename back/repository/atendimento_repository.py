@@ -29,6 +29,7 @@ class AtendimentoRepository:
                              data_hora_fim=None, offset=None, limit=None, order_by=None, order_dir=None):
         try:
             query = self.session.query(Atendimento)
+            total = query.count()
             filtros = []
 
             if id_atendimento is not None:
@@ -61,12 +62,17 @@ class AtendimentoRepository:
                     coluna = coluna.asc()
                 query = query.order_by(coluna)
 
+            total_filtrado = query.count()
+            valor_total = query.with_entities(
+                func.sum(Atendimento.preco_total)).scalar()
+
             if offset is not None:
                 query = query.offset(offset)
             if limit is not None:
                 query = query.limit(limit)
 
-            return query.all()
+            resultados = query.all()
+            return resultados, total, total_filtrado, valor_total
 
         except Exception as e:
             raise e

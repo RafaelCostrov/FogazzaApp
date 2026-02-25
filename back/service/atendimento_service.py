@@ -70,7 +70,7 @@ class AtendimentoService():
                              pagina: int = 1, limit: int = 50, order_by: str = "comprado_em", order_dir: str = "asc"):
         try:
             offset = (pagina - 1) * limit
-            atendimentos = self.repositorio.filtrar_atendimentos(
+            atendimentos, total, total_filtrado, valor_total = self.repositorio.filtrar_atendimentos(
                 id_atendimento=id_atendimento,
                 tipo_cliente=tipo_cliente,
                 preco_min=preco_min,
@@ -99,7 +99,12 @@ class AtendimentoService():
                     "comprado_em": atendimento.comprado_em.strftime("%Y-%m-%d %H:%M:%S"),
                     "itens": itens
                 })
-            return lista_filtrada
+            return {
+                "atendimentos": lista_filtrada,
+                "total": total,
+                "total_filtrado": total_filtrado,
+                "valor_total": valor_total
+            }
         except Exception as e:
             raise e
 
