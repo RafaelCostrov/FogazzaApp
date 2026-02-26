@@ -9,8 +9,8 @@ Adiciona uma nova fogazza.
 **Recebe:**
 ```json
 {
-    "nome_fogazza": "Calabresa",  // string
-    "preco_fogazza": 15.00       // float
+    "nome_fogazza": "Calabresa", // string
+    "preco_fogazza": 15.00        // float
 }
 ```
 
@@ -19,9 +19,9 @@ Adiciona uma nova fogazza.
 {
     "mensagem": "Fogazza adicionada com sucesso!",
     "fogazza": {
-        "id_fogazza": 1,           // int
+        "id_fogazza": 1,            // int
         "nome_fogazza": "Calabresa", // string
-        "preco_fogazza": 15.00     // float
+        "preco_fogazza": 15.00      // float
     }
 }
 ```
@@ -36,9 +36,9 @@ Lista todas as fogazzas disponíveis.
 ```json
 [
     {
-        "id_fogazza": 1,           // int
+        "id_fogazza": 1,            // int
         "nome_fogazza": "Calabresa", // string
-        "preco_fogazza": 15.00     // float
+        "preco_fogazza": 15.00      // float
     }
 ]
 ```
@@ -52,7 +52,7 @@ Remove uma fogazza pelo ID.
 **Recebe:**
 ```json
 {
-    "id_fogazza": 1  // int
+    "id_fogazza": 1 // int
 }
 ```
 
@@ -67,35 +67,38 @@ Remove uma fogazza pelo ID.
 
 ## Atendimento
 
+Notas:
+- Os valores de `tipo_cliente` são strings em MAIÚSCULAS: `EQUIPE`, `VISITANTE`, `VOLUNTARIO`.
+
 ### `POST /atendimento/adicionar`
 
-Adiciona um novo atendimento. Se o tipo_cliente for "equipe", o preço total será 0.
+Adiciona um novo atendimento. Se `tipo_cliente` for `EQUIPE`, o `preco_total` será 0.
 
 **Recebe:**
 ```json
 {
-    "tipo_cliente": "visitante",   // string (opções: "equipe", "visitante", "voluntario")
-    "fogazzas": [                  // list object
-        {
-            "id_fogazza": 1,       // int
-            "quantidade": 2        // int
-        }
-    ]
+    "tipo_cliente": "VISITANTE",             // string (opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
+    "fogazzas": [
+        { "id_fogazza": 1, "quantidade": 2 }   // list object: id_fogazza -> int, quantidade -> int
+    ],
+    "viagem": false                            // boolean
 }
 ```
 
-**Resposta (201):**
+**Resposta (201):** (retorna o atendimento criado com campos adicionais)
 ```json
 {
-    "id_atendimento": 1,                    // int
-    "tipo_cliente": "visitante",            // string
-    "preco_total": 30.00,                   // float
-    "comprado_em": "2026-02-19 14:30:00",   // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "itens": [                              // list object
+    "id_atendimento": 1,                         // int
+    "tipo_cliente": "VISITANTE",               // string
+    "preco_total": 30.00,                        // float
+    "comprado_em": "2026-02-19 14:30:00",     // string (formato: "YYYY-MM-DD HH:MM:SS")
+    "viagem": false,                             // boolean
+    "ativo": true,                               // boolean
+    "itens": [
         {
-            "id_fogazza": 1,                // int
-            "quantidade": 2,                // int
-            "preco_fogazza": 15.00          // float
+            "id_fogazza": 1,                         // int
+            "quantidade": 2,                         // int
+            "preco_fogazza": 15.00                    // float
         }
     ]
 }
@@ -105,21 +108,18 @@ Adiciona um novo atendimento. Se o tipo_cliente for "equipe", o preço total ser
 
 ### `GET /atendimento/listar`
 
-Lista todos os atendimentos.
+Lista todos os atendimentos. (Resposta construída pela rota; contém os campos básicos abaixo.)
 
 **Resposta (200):**
 ```json
 [
     {
-        "id_atendimento": 1,                  // int
-        "tipo_cliente": "visitante",           // string
-        "preco_total": 30.00,                  // float
-        "comprado_em": "2026-02-19 14:30:00",  // string
-        "itens": [                             // list object
-            {
-                "id_fogazza": 1,               // int
-                "quantidade": 2                // int
-            }
+        "id_atendimento": 1,                       // int
+        "tipo_cliente": "VISITANTE",             // string
+        "preco_total": 30.00,                      // float
+        "comprado_em": "2026-02-19 14:30:00",   // string
+        "itens": [
+            { "id_fogazza": 1, "quantidade": 2 }  // id_fogazza -> int, quantidade -> int
         ]
     }
 ]
@@ -135,62 +135,57 @@ Filtra atendimentos com paginação e ordenação. Todos os campos são opcionai
 ```json
 {
     "id_atendimento": [1, 3],                       // list[int]
-    "tipo_cliente": ["VISITANTE", "EQUIPE"],         // list[string] (opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
-    "preco_min": 10.00,                              // float
-    "preco_max": 100.00,                             // float
-    "data_hora_min": "2025-01-01 00:00:00",          // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "data_hora_max": "2026-12-31 23:59:59",          // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "pagina": 1,                                     // int (default: 1)
-    "limit": 50,                                     // int (default: 50)
-    "order_by": "comprado_em",                       // string (opções: "id_atendimento", "tipo_cliente", "preco_total", "comprado_em")
-    "order_dir": "desc"                              // string (opções: "asc", "desc")
+    "tipo_cliente": ["VISITANTE", "EQUIPE"],     // list[string] (opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
+    "preco_min": 10.00,                             // float
+    "preco_max": 100.00,                            // float
+    "data_hora_min": "2025-01-01 00:00:00",       // string (formato: "YYYY-MM-DD HH:MM:SS")
+    "data_hora_max": "2026-12-31 23:59:59",       // string (formato: "YYYY-MM-DD HH:MM:SS")
+    "pagina": 1,                                    // int (default: 1)
+    "limit": 50,                                    // int (default: 50)
+    "order_by": "comprado_em",                    // string (opções: "id_atendimento", "tipo_cliente", "preco_total", "comprado_em")
+    "order_dir": "desc"                           // string (opções: "asc", "desc")
 }
 ```
 
-**Resposta (200):**
+**Resposta (200):** (retorna um objeto com lista de atendimentos e metadados)
 ```json
-[
-    {
-        "id_atendimento": 1,                  // int
-        "tipo_cliente": "visitante",           // string
-        "preco_total": 30.00,                  // float
-        "comprado_em": "2026-02-19 14:30:00",  // string
-        "itens": [                             // list object
-            {
-                "id_fogazza": 1,               // int
-                "quantidade": 2,               // int
-                "preco_fogazza": 15.00         // float
-            }
-        ]
-    }
-]
+{
+    "atendimentos": [
+        {
+            "id_atendimento": 1,                       // int
+            "tipo_cliente": "VISITANTE",             // string
+            "preco_total": 30.00,                      // float
+            "comprado_em": "2026-02-19 14:30:00",   // string
+            "ativo": true,                             // boolean
+            "itens": [
+                { "id_fogazza": 1, "quantidade": 2, "preco_fogazza": 15.00 }
+            ]
+        }
+    ],
+    "total": 100,                                  // int
+    "total_filtrado": 1,                           // int
+    "valor_total": 30.00                           // float
+}
 ```
 
 ---
 
 ### `PUT /atendimento/atualizar`
 
-Atualiza um atendimento. Apenas os campos enviados serão alterados. O preço total é recalculado automaticamente ao alterar fogazzas ou tipo_cliente.
+Atualiza um atendimento. Apenas os campos enviados serão alterados. O preço total é recalculado automaticamente ao alterar `fogazzas` ou `tipo_cliente`.
 
 **Recebe:**
 ```json
 {
-    "id_atendimento": 1,           // int (obrigatório)
-    "tipo_cliente": "equipe",      // string (opcional, opções: "equipe", "visitante", "voluntario")
-    "fogazzas": [                  // list object 
-        {
-            "id_fogazza": 1,       // int
-            "quantidade": 3        // int
-        }
-    ]
+    "id_atendimento": 1,                     // int (obrigatório)
+    "tipo_cliente": "EQUIPE",              // string (opcional, opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
+    "fogazzas": [ { "id_fogazza": 1, "quantidade": 3 } ] // list object
 }
 ```
 
 **Resposta (200):**
 ```json
-{
-    "mensagem": "Atendimento atualizado com sucesso!"
-}
+{ "mensagem": "Atendimento atualizado com sucesso!" }
 ```
 
 ---
@@ -201,16 +196,12 @@ Remove um atendimento e todos os itens vinculados.
 
 **Recebe:**
 ```json
-{
-    "id_atendimento": 1  // int
-}
+{ "id_atendimento": 1 } // int
 ```
 
 **Resposta (200):**
 ```json
-{
-    "mensagem": "Atendimento removido com sucesso!"
-}
+{ "mensagem": "Atendimento removido com sucesso!" }
 ```
 
 ---
@@ -221,16 +212,12 @@ Imprime o recibo de um atendimento na impressora térmica.
 
 **Recebe:**
 ```json
-{
-    "id_atendimento": 1  // int
-}
+{ "id_atendimento": 1 } // int
 ```
 
 **Resposta (200):**
 ```json
-{
-    "mensagem": "Recibo impresso com sucesso!"
-}
+{ "mensagem": "Recibo impresso com sucesso!" }
 ```
 
 ---
@@ -240,7 +227,5 @@ Imprime o recibo de um atendimento na impressora térmica.
 Todas as rotas retornam erro no formato abaixo com status **400**:
 
 ```json
-{
-    "erro": "mensagem de erro"
-}
+{ "erro": "mensagem de erro" }
 ```
