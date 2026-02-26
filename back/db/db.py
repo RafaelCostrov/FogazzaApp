@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
@@ -19,6 +19,5 @@ engine = create_engine(
 
 SessionFactory = sessionmaker(
     bind=engine, autoflush=False, expire_on_commit=False)
-Session = scoped_session(SessionFactory)
 
 Base.metadata.create_all(engine)

@@ -11,8 +11,9 @@ from io import BytesIO
 
 class AtendimentoService():
 
-    repositorio = AtendimentoRepository()
-    repositorio_fogazza = FogazzaRepository()
+    def __init__(self, session):
+        self.repositorio = AtendimentoRepository(session)
+        self.repositorio_fogazza = FogazzaRepository(session)
 
     def adicionar_atendimento(self, tipo_cliente, fogazzas, viagem):
         try:

@@ -1,13 +1,12 @@
 from sqlalchemy import func, and_, distinct
 from sqlalchemy.orm import joinedload
 from model.atendimento import Atendimento
-from db.db import Session
 
 
 class AtendimentoRepository:
 
-    def __init__(self):
-        self.session = Session
+    def __init__(self, session):
+        self.session = session
 
     def adicionar_atendimento(self, atendimento: Atendimento):
         try:

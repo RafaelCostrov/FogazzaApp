@@ -9,7 +9,8 @@ from io import BytesIO
 
 class FogazzaService():
 
-    repositorio = FogazzaRepository()
+    def __init__(self, session):
+        self.repositorio = FogazzaRepository(session)
 
     def adicionar_fogazza(self, nome_fogazza, preco_fogazza):
         try:

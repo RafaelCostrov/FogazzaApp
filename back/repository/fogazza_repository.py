@@ -1,12 +1,11 @@
 from sqlalchemy import and_
 from model.fogazza import Fogazza
-from db.db import Session
 
 
 class FogazzaRepository:
 
-    def __init__(self):
-        self.session = Session
+    def __init__(self, session):
+        self.session = session
 
     def adicionar_fogazza(self, fogazza: Fogazza):
         try:
