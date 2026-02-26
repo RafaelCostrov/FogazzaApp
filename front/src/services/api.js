@@ -60,6 +60,23 @@ export const atendimentoService = {
       body: JSON.stringify({ id_atendimento: idAtendimento }),
     })
   },
+
+  async filtrar(filtros = {}) {
+    return apiRequest('/atendimento/filtrar', {
+      method: 'POST',
+      body: JSON.stringify(filtros),
+    })
+  },
+
+  async listarTodos() {
+    // Usar o filtrar sem parâmetros para listar todos
+    return this.filtrar({
+      pagina: 1,
+      limit: 1000, // Limite alto para pegar todos os registros
+      order_by: "comprado_em",
+      order_dir: "desc"
+    })
+  },
 }
 
 export default fogazzaService

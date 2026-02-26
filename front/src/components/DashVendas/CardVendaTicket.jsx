@@ -1,0 +1,183 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+export default function CardVendaTicket({ dados = [] }) {
+  const [loading, setLoading] = useState(false);
+
+  function calcularVendaTicket() {
+    const vendasPorTipo = {};
+
+    dados.forEach(atendimento => {
+      const tipoCliente = atendimento.tipo_cliente;
+      
+      let quantidadeTotal = 0;
+      if (atendimento.itens && Array.isArray(atendimento.itens)) {
+        quantidadeTotal = atendimento.itens.reduce((total, item) => {
+          return total + (item.quantidade || 0);
+        }, 0);
+      }
+    
+      if (vendasPorTipo[tipoCliente]) {
+        vendasPorTipo[tipoCliente] += quantidadeTotal;
+      } else {
+        vendasPorTipo[tipoCliente] = quantidadeTotal;
+      }
+    });
+
+    const tipos = Object.keys(vendasPorTipo);
+    const valores = Object.values(vendasPorTipo);
+
+    return {
+      tipos: tipos,
+      valores: valores
+    };
+  }
+  
+  function gerarCoresGrafico(quantidade) {
+    const cores = [
+      '#D1A24B',  
+      '#056839',  
+      '#973E36',  
+
+    ];
+
+    return cores.slice(0, quantidade);
+  }
+
+  // Processar os dados
+  const dadosProcessados = calcularVendaTicket();
+  const cores = gerarCoresGrafico(dadosProcessados.tipos.length);
+
+  const chartData = {
+    labels: dadosProcessados.tipos,
+    datasets: [
+      {
+        label: 'Quantidade Vendida',
+        data: dadosProcessados.valores,
+        backgroundColor: cores,
+        borderColor: cores.map(cor => cor + '80'),
+        borderWidth: 2,
+        hoverBackgroundColor: cores.map(cor => cor + 'CC'),
+        hoverBorderColor: '#ffffff',
+        hoverBorderWidth: 3,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false 
+      },
+      tooltip: {
+         backgroundColor: '#973E36',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#973E36',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: {
+          family: 'Poppins',
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          family: 'Poppins',
+          size: 12
+        },
+        callbacks: {
+          label: function(context) {
+            const quantidade = context.parsed.y;
+            return `${context.label}: ${quantidade} ${quantidade === 1 ? 'unidade' : 'unidades'}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            // Usar notação compacta para números grandes
+            if (value >= 1000) {
+              return (value / 1000).toFixed(1) + 'k unidades';
+            }
+            return Math.floor(value) + (value === 1 ? ' unidade' : ' unidades');
+          },
+          font: {
+            family: 'Poppins',
+            size: 11
+          },
+          maxTicksLimit: 8, 
+          precision: 0 
+        }
+      },
+      x: {
+        ticks: {
+          font: {
+            family: 'Poppins',
+            size: 12,
+            weight: '500'
+          }
+        }
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-lg shadow-md p-6"
+      >
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded mb-4 w-1/2"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+    >
+      <h3 className="text-[18px] text-gray-600 mb-4 font-medium text-left font-poppins">
+        Quantidade Vendida por Tipo
+      </h3>
+      <div className="h-80 flex items-center justify-center">
+        {dadosProcessados.tipos.length > 0 ? (
+          <Bar data={chartData} options={options} />
+        ) : (
+          <div className="text-center text-gray-500">
+            <p className="font-poppins">Nenhum dado disponível</p>
+          </div>
+        )}
+      </div>
+      {dadosProcessados.tipos.length > 0 && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600 font-poppins">
+            Tipos de cliente: <span className="font-semibold">{dadosProcessados.tipos.length}</span>
+          </p>
+          <p className="text-sm text-gray-600 font-poppins">
+            Total de unidades: <span className="font-semibold">
+              {dadosProcessados.valores.reduce((a, b) => a + b, 0)} unidades
+            </span>
+          </p>
+        </div>
+      )}
+    </motion.div>
+  );
+}

@@ -1,11 +1,15 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 import Lista from './components/Lista'
 import Resumo from './components/Resumo'
+import Dashboard from './pages/Dashboard'
+import Relatorio from './pages/Relatorio'
 
-function App() {
+function AppContent() {
+  const location = useLocation();
   const [itensSelecionados, setItensSelecionados] = useState([])
 
   const adicionarItem = (item) => {
@@ -36,26 +40,37 @@ function App() {
     setItensSelecionados([])
   }
 
+  // Página principal (pedidos)
+  const PaginaPrincipal = () => (
+    <main className="p-6">
+      <div className="mx-auto max-w-7xl flex gap-8">
+        <div className="flex-1">
+          <Lista 
+            onAdicionarItem={adicionarItem}
+            onRemoverItem={removerItem}
+            itensSelecionados={itensSelecionados}
+          />
+        </div>
+        <div style={{width: '450px'}}>
+          <Resumo 
+            itensSelecionados={itensSelecionados} 
+            onFinalizarAtendimento={limparVenda}
+          />
+        </div>
+      </div>
+    </main>
+  )
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-100 to-yellow-200 text-slate-900">
-      <Header />
-      <main className="p-6">
-        <div className="mx-auto max-w-7xl flex gap-8">
-          <div className="flex-1">
-            <Lista 
-              onAdicionarItem={adicionarItem}
-              onRemoverItem={removerItem}
-              itensSelecionados={itensSelecionados}
-            />
-          </div>
-          <div style={{width: '450px'}}>
-            <Resumo 
-              itensSelecionados={itensSelecionados} 
-              onFinalizarAtendimento={limparVenda}
-            />
-          </div>
-        </div>
-      </main>
+      {/* Renderizar Header apenas nas páginas que precisam dele */}
+      {location.pathname !== '/dashboard' && <Header />}
+      
+      <Routes>
+        <Route path="/" element={<PaginaPrincipal />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/relatorio" element={<Relatorio />} />
+      </Routes>
       
       <ToastContainer
         position="top-right"
@@ -73,6 +88,14 @@ function App() {
         }}
       />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 
