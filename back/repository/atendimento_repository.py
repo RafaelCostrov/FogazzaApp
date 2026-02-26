@@ -34,8 +34,14 @@ class AtendimentoRepository:
             if id_atendimento is not None:
                 filtros.append(Atendimento.id_atendimento.in_(id_atendimento))
             if id_fogazzas is not None:
-                query = query.join(Atendimento.itens).filter(
-                    AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
+                subquery = (
+                    self.session.query(AtendimentoFogazza.id_atendimento)
+                    .filter(AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
+                    .group_by(AtendimentoFogazza.id_atendimento)
+                    .having(func.count(distinct(AtendimentoFogazza.id_fogazza)) == len(id_fogazzas))
+                    .subquery()
+                )
+                query = query.filter(Atendimento.id_atendimento.in_(subquery))
             if tipo_cliente is not None:
                 filtros.append(Atendimento.tipo_cliente.in_(tipo_cliente))
             if preco_min is not None:
