@@ -67,13 +67,14 @@ class AtendimentoService():
         except Exception as e:
             raise e
 
-    def filtrar_atendimentos(self, id_atendimento: list[int] = None, tipo_cliente: list[TipoCliente] = None, preco_min: float = None, preco_max: float = None,
-                             data_hora_inicio: datetime.datetime = None, data_hora_fim: datetime.datetime = None,
+    def filtrar_atendimentos(self, id_atendimento: list[int] = None, id_fogazzas: list[int] = None, tipo_cliente: list[TipoCliente] = None, preco_min: float = None,
+                             preco_max: float = None, data_hora_inicio: datetime.datetime = None, data_hora_fim: datetime.datetime = None,
                              pagina: int = 1, limit: int = 50, order_by: str = "comprado_em", order_dir: str = "asc"):
         try:
             offset = (pagina - 1) * limit
             atendimentos, total, total_filtrado, valor_total = self.repositorio.filtrar_atendimentos(
                 id_atendimento=id_atendimento,
+                id_fogazzas=id_fogazzas,
                 tipo_cliente=tipo_cliente,
                 preco_min=preco_min,
                 preco_max=preco_max,

@@ -58,6 +58,7 @@ def filtrar_atendimentos():
     try:
         data = request.get_json()
         id_atendimento = data.get('id_atendimento')
+        id_fogazzas = data.get('id_fogazzas')
         tipo_cliente = data.get('tipo_cliente')
         preco_min = data.get('preco_min')
         preco_max = data.get('preco_max')
@@ -70,6 +71,7 @@ def filtrar_atendimentos():
         atendimento_service = AtendimentoService(session)
         resultado = atendimento_service.filtrar_atendimentos(
             id_atendimento=id_atendimento,
+            id_fogazzas=id_fogazzas,
             tipo_cliente=tipo_cliente,
             preco_min=preco_min,
             preco_max=preco_max,

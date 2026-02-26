@@ -1,6 +1,6 @@
 from sqlalchemy import func, and_, distinct
 from sqlalchemy.orm import joinedload
-from model.atendimento import Atendimento
+from model.atendimento import Atendimento, AtendimentoFogazza
 
 
 class AtendimentoRepository:
@@ -24,7 +24,7 @@ class AtendimentoRepository:
         except Exception as e:
             raise e
 
-    def filtrar_atendimentos(self, id_atendimento=None, tipo_cliente=None, preco_min=None, preco_max=None, data_hora_inicio=None,
+    def filtrar_atendimentos(self, id_atendimento=None, id_fogazzas=None, tipo_cliente=None, preco_min=None, preco_max=None, data_hora_inicio=None,
                              data_hora_fim=None, offset=None, limit=None, order_by=None, order_dir=None):
         try:
             query = self.session.query(Atendimento)
@@ -33,6 +33,9 @@ class AtendimentoRepository:
 
             if id_atendimento is not None:
                 filtros.append(Atendimento.id_atendimento.in_(id_atendimento))
+            if id_fogazzas is not None:
+                query = query.join(Atendimento.itens).filter(
+                    AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
             if tipo_cliente is not None:
                 filtros.append(Atendimento.tipo_cliente.in_(tipo_cliente))
             if preco_min is not None:
