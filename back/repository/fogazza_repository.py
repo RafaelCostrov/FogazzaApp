@@ -17,14 +17,14 @@ class FogazzaRepository:
 
     def listar_fogazzas(self):
         try:
-            return self.session.query(Fogazza).all()
+            return self.session.query(Fogazza).filter(Fogazza.ativo == True).all()
         except Exception as e:
             raise e
 
     def filtrar_fogazzas(self, id_fogazza=None, nome=None, preco_min=None, preco_max=None, offset=None, limit=None, order_by=None, order_dir=None):
         try:
             query = self.session.query(Fogazza)
-            filtros = []
+            filtros = [Fogazza.ativo == True]
 
             if id_fogazza is not None:
                 filtros.append(Fogazza.id_fogazza == id_fogazza)
@@ -71,7 +71,7 @@ class FogazzaRepository:
         try:
             fogazza = self.filtrar_por_id(id_fogazza)
             if fogazza is not None:
-                self.session.delete(fogazza)
+                fogazza.ativo = False
                 self.session.commit()
         except Exception as e:
             self.session.rollback()

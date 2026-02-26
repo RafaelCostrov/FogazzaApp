@@ -49,6 +49,7 @@ class AtendimentoService():
                 "preco_total": atendimento.preco_total,
                 "comprado_em": atendimento.comprado_em.strftime("%Y-%m-%d %H:%M:%S"),
                 "viagem": atendimento.viagem,
+                "ativo": atendimento.ativo,
                 "itens": [
                     {
                         "id_fogazza": item.id_fogazza,
@@ -98,6 +99,7 @@ class AtendimentoService():
                     "tipo_cliente": atendimento.tipo_cliente.value,
                     "preco_total": atendimento.preco_total,
                     "comprado_em": atendimento.comprado_em.strftime("%Y-%m-%d %H:%M:%S"),
+                    "ativo": atendimento.ativo,
                     "itens": itens
                 })
             return {

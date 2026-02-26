@@ -24,5 +24,6 @@ class Atendimento(Base):
     preco_total = Column(Float, nullable=False)
     comprado_em = Column(DateTime, nullable=False)
     viagem = Column(Boolean)
+    ativo = Column(Boolean, nullable=False, default=True)
 
     itens = relationship("AtendimentoFogazza", cascade="all, delete-orphan")

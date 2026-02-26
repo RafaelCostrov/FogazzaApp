@@ -20,7 +20,8 @@ class FogazzaService():
             json_fogazza = {
                 "id_fogazza": nova_fogazza.id_fogazza,
                 "nome_fogazza": nova_fogazza.nome_fogazza,
-                "preco_fogazza": nova_fogazza.preco_fogazza
+                "preco_fogazza": nova_fogazza.preco_fogazza,
+                "ativo": nova_fogazza.ativo
             }
             return json_fogazza
         except Exception as e:
@@ -34,7 +35,8 @@ class FogazzaService():
                 json_fogazza = {
                     "id_fogazza": fogazza.id_fogazza,
                     "nome_fogazza": fogazza.nome_fogazza,
-                    "preco_fogazza": fogazza.preco_fogazza
+                    "preco_fogazza": fogazza.preco_fogazza,
+                    "ativo": fogazza.ativo
                 }
                 json_fogazzas.append(json_fogazza)
             return json_fogazzas

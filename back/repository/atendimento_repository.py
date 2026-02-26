@@ -20,7 +20,7 @@ class AtendimentoRepository:
 
     def listar_atendimentos(self):
         try:
-            return self.session.query(Atendimento).options(joinedload(Atendimento.itens)).all()
+            return self.session.query(Atendimento).options(joinedload(Atendimento.itens)).filter(Atendimento.ativo == True).all()
         except Exception as e:
             raise e
 
@@ -29,7 +29,7 @@ class AtendimentoRepository:
         try:
             query = self.session.query(Atendimento)
             total = query.count()
-            filtros = []
+            filtros = [Atendimento.ativo == True]
 
             if id_atendimento is not None:
                 filtros.append(Atendimento.id_atendimento.in_(id_atendimento))
@@ -86,7 +86,7 @@ class AtendimentoRepository:
         try:
             atendimento = self.filtrar_atendimento_por_id(id_atendimento)
             if atendimento:
-                self.session.delete(atendimento)
+                atendimento.ativo = False
                 self.session.commit()
             else:
                 raise Exception("Atendimento não encontrado")
