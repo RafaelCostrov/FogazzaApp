@@ -78,7 +78,6 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
     setModalAberto(false)
     setAtendimentoFinalizado(null)
 
-    // Limpar dados do atendimento
     if (onFinalizarAtendimento) {
       onFinalizarAtendimento(atendimentoFinalizado)
     }

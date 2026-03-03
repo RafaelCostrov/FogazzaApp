@@ -34,14 +34,12 @@ class AtendimentoRepository:
             if id_atendimento is not None:
                 filtros.append(Atendimento.id_atendimento.in_(id_atendimento))
             if id_fogazzas is not None:
-                subquery = (
-                    self.session.query(AtendimentoFogazza.id_atendimento)
-                    .filter(AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
-                    .group_by(AtendimentoFogazza.id_atendimento)
-                    .having(func.count(distinct(AtendimentoFogazza.id_fogazza)) == len(id_fogazzas))
-                    .subquery()
-                )
-                query = query.filter(Atendimento.id_atendimento.in_(subquery))
+                # include any atendimento that contains at least one of the selected fogazzas
+                # original implementation required all flavors; change to OR semantics
+                query = query.join(AtendimentoFogazza)
+                query = query.filter(AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
+                # avoid duplicate atendimentos due to join
+                query = query.distinct()
             if tipo_cliente is not None:
                 filtros.append(Atendimento.tipo_cliente.in_(tipo_cliente))
             if preco_min is not None:

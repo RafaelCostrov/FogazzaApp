@@ -5,7 +5,7 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function CardVendaTicket({ dados = [] }) {
+export default function CardVendaTicket({ dados = [], onTipoClick }) {
   const [loading, setLoading] = useState(false);
 
   function calcularVendaTicket() {
@@ -38,19 +38,24 @@ export default function CardVendaTicket({ dados = [] }) {
   }
   
   function gerarCoresGrafico(quantidade) {
-    const cores = [
-      '#D1A24B',  
-      '#056839',  
-      '#973E36',  
-
+    // Mesmo padrão do CardVendaSabor
+    const coresPrimarias = [
+      '#D1A24B',  // dourado
+      '#056839',  // verde
+      '#973E36',  // vinho
     ];
-
-    return cores.slice(0, quantidade);
+    // Repete as cores se houver mais tipos
+    const cores = [];
+    for (let i = 0; i < quantidade; i++) {
+      cores.push(coresPrimarias[i % coresPrimarias.length]);
+    }
+    return cores;
   }
 
   // Processar os dados
   const dadosProcessados = calcularVendaTicket();
   const cores = gerarCoresGrafico(dadosProcessados.tipos.length);
+  const maxValor = dadosProcessados.valores.length > 0 ? Math.max(...dadosProcessados.valores) : 0;
 
   const chartData = {
     labels: dadosProcessados.tipos,
@@ -64,8 +69,28 @@ export default function CardVendaTicket({ dados = [] }) {
         hoverBackgroundColor: cores.map(cor => cor + 'CC'),
         hoverBorderColor: '#ffffff',
         hoverBorderWidth: 3,
+        borderRadius: 4,
+        maxBarThickness: 48,
+        minBarLength: 2
       }
     ]
+  };
+
+
+  // click no gráfico - usa API do Chart para garantir detecção imediata
+  const handleChartClick = (event, elements, chart) => {
+    // chart vem como terceiro parâmetro na callback do react-chartjs-2
+    if (!chart) return;
+    const target = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
+    if (!target || target.length === 0) return;
+    const index = target[0].index;
+    const tipo = dadosProcessados.tipos[index];
+    if (onTipoClick && tipo) {
+      onTipoClick(tipo);
+    } else {
+      const el = document.getElementById('historico-tabela');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const options = {
@@ -100,23 +125,25 @@ export default function CardVendaTicket({ dados = [] }) {
         }
       }
     },
+    onClick: handleChartClick,
     scales: {
       y: {
         beginAtZero: true,
+        suggestedMax: maxValor > 0 ? maxValor : 1,
         ticks: {
+          stepSize: 1,
           callback: function(value) {
-            // Usar notação compacta para números grandes
             if (value >= 1000) {
-              return (value / 1000).toFixed(1) + 'k unidades';
+              return (value / 1000).toFixed(1);
             }
-            return Math.floor(value) + (value === 1 ? ' unidade' : ' unidades');
+            return Math.floor(value) + (value === 1 ? ' un.' : ' un.');
           },
           font: {
             family: 'Poppins',
             size: 11
           },
-          maxTicksLimit: 8, 
-          precision: 0 
+          maxTicksLimit: 8,
+          precision: 0
         }
       },
       x: {
@@ -130,6 +157,8 @@ export default function CardVendaTicket({ dados = [] }) {
       }
     }
   };
+
+
 
   if (loading) {
     return (
@@ -162,7 +191,7 @@ export default function CardVendaTicket({ dados = [] }) {
           <Bar data={chartData} options={options} />
         ) : (
           <div className="text-center text-gray-500">
-            <p className="font-poppins">Nenhum dado disponível</p>
+            <p className="font-poppins">Nenhum dado disponível no filtro selecionado.</p>
           </div>
         )}
       </div>
@@ -180,4 +209,5 @@ export default function CardVendaTicket({ dados = [] }) {
       )}
     </motion.div>
   );
+
 }

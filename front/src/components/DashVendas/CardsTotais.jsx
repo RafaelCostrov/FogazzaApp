@@ -5,13 +5,14 @@ import { GiTacos } from "react-icons/gi";
 import { FaCashRegister } from "react-icons/fa6";
 import { atendimentoService } from '../../services/api';
 
-function Card({ icone, titulo, valor, subtitulo, cor }) {
+function Card({ icone, titulo, valor, subtitulo, cor, onClick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300"
+      onClick={onClick}
+      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">
@@ -105,6 +106,10 @@ export default function CardsTotais({ dados = [] }) {
         titulo="Vendas Totais"
         valor={formatarValor(metricas.vendasTotais)}
         cor="text-[#056839]"
+         onClick={() => {
+    const el = document.getElementById('historico-tabela');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
       />
 
        <Card 
@@ -113,6 +118,10 @@ export default function CardsTotais({ dados = [] }) {
         valor={metricas.pedidosTotais.toString()}
         subtitulo="Total de atendimentos"
         cor="text-[#D1A24B]"
+         onClick={() => {
+    const el = document.getElementById('historico-tabela');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
       />
 
       <Card 
@@ -121,6 +130,10 @@ export default function CardsTotais({ dados = [] }) {
         valor={metricas.quantidadeVendida.toString()}
         subtitulo="Total de itens"
         cor="text-[#973E36]"
+        onClick={() => {
+    const el = document.getElementById('historico-tabela');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
       />
       
       
@@ -130,6 +143,10 @@ export default function CardsTotais({ dados = [] }) {
         valor={formatarValor(metricas.ticketMedio)}
         subtitulo="Valor médio por pedido"
         cor="text-[#056839]"
+        onClick={() => {
+    const el = document.getElementById('historico-tabela');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
       />
     </div>
   );

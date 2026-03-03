@@ -5,21 +5,20 @@ import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function CardVendaSabor({ dados = [], fogazzas = [] }) {
+export default function CardVendaSabor({ dados = [], fogazzas = [], onSaborClick }) {
   const [loading, setLoading] = useState(false);
 
 
 
   const gerarCoresGrafico = (quantidade) => {
-    const coresPrimarias = [
-      '#D1A24B',  // Queijo
-      '#056839',  // Calabresa  
-      '#973E36',  // Pizza
-      '#8B5A3C',  // Marrom
-      '#4A5568',  // Cinza azulado
-    ];
+    const corPorSabor = {
+      'Fogazza Queijo': '#D1A24B',      
+      'Fogazza Calabresa': '#056839',   
+      'Fogazza Pizza': '#973E36',       
+    };
 
-    return coresPrimarias.slice(0, quantidade);
+    const sabores = processarDadosPorSabor().labels;
+    return sabores.map(sabor => corPorSabor[sabor] || '#888888').slice(0, quantidade);
   };
 
   const processarDadosPorSabor = () => {
@@ -139,6 +138,19 @@ export default function CardVendaSabor({ dados = [], fogazzas = [] }) {
     );
   }
 
+  // click no gráfico
+  const handleChartClick = (event, elements, chart) => {
+    if (!elements || elements.length === 0) return;
+    const index = elements[0].index;
+    const sabor = dadosProcessados.labels[index];
+    if (onSaborClick && sabor) {
+      onSaborClick(sabor);
+    } else {
+      const el = document.getElementById('historico-tabela');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -151,18 +163,21 @@ export default function CardVendaSabor({ dados = [], fogazzas = [] }) {
       </h3>
       <div className="h-80 flex items-center  justify-center">
         {dadosProcessados.labels.length > 0 ? (
-          <Doughnut data={chartData} options={options} />
+          <Doughnut 
+            data={chartData} 
+            options={{
+              ...options,
+              onClick: handleChartClick
+            }} 
+          />
         ) : (
           <div className="text-center text-gray-500">
-            <p className="font-poppins">Nenhum dado disponível</p>
+            <p className="font-poppins">Nenhum dado disponível no filtro selecionado.</p>
           </div>
         )}
       </div>
       {dadosProcessados.labels.length > 0 && (
         <div className="mt-8 text-center">
-          {/* <p className="text-sm text-gray-600 font-poppins">
-            Total de sabores: <span className="font-semibold">{dadosProcessados.labels.length}</span>
-          </p> */}
           <p className="text-sm text-gray-600 font-poppins">
             Total vendido: <span className="font-semibold">{dadosProcessados.valores.reduce((a, b) => a + b, 0)} unidades</span>
           </p>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import CartaoFogaca from './ListaFogazza'
 import { fogazzaService } from '../services/api'
+import { GiTacos } from "react-icons/gi";
 
 function Lista({ onAdicionarItem, onRemoverItem, itensSelecionados }) {
   const [fogacas, setFogacas] = useState([])
@@ -50,7 +51,13 @@ function Lista({ onAdicionarItem, onRemoverItem, itensSelecionados }) {
             Selecione os sabores
           </h2>
           <div className="flex justify-center items-center py-12">
-            <div className="text-gray-600">Carregando fogazzas...</div>
+            
+            <div className="flex flex-col items-center text-green-igreja">
+              <GiTacos className="animate-spin duration-1000 text-4xl mb-3 " />
+              <span className="text-sm font-medium">
+              Carregando fogazzas...
+              </span>
+              </div>
           </div>
         </div>
       </section>

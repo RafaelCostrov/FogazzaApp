@@ -20,14 +20,14 @@ export default function HeaderRelatorio({
             <RiExportFill
               size={24}
               className="hover:scale-110 transition-all duration-200 cursor-pointer"
-              title="Exportar"
+              title="Exportar atendimentos"
             />
           </button>
           <button onClick={onClickFiltrar}>
             <FaFilter
               size={22}
               className="hover:scale-110 transition-all duration-200 cursor-pointer"
-              title="Filtrar relatórios"
+              title="Filtrar atendimentos"
             />
           </button>
         </div>

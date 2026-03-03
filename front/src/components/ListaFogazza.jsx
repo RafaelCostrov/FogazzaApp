@@ -32,7 +32,10 @@ function ListaFogazza({ nome, preco, quantidade, onAdicionar, onRemover }) {
           </button>
         </div>
       </div>
+      
     </div>
+
+    
   )
 }
 

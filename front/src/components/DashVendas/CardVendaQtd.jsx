@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale,LinearScale,PointElement,LineElement,Title,Tooltip,Legend);
 
-export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint }) {
+export default function CardVendaQtd({ dados = [], fogazzas = [], onClickPoint }) {
   const [loading, setLoading] = useState(false);
   const [modoVisualizacao, setModoVisualizacao] = useState('TODAS'); 
 
@@ -13,39 +13,33 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
   const processarDadosPorHora = () => {
     if (modoVisualizacao === 'TODAS') {
       const vendasPorHora = Array(24).fill(0);
-      
-      dados.forEach(atendimento => {
-        if (atendimento.comprado_em) {
-          const data = new Date(atendimento.comprado_em);
-          const hora = data.getHours();
-          vendasPorHora[hora] += atendimento.preco_total || 0;
-        }
-      });
-
-      return { 'Todas as Vendas': vendasPorHora };
-    } else {
-      const saboresData = {};
-      
-      fogazzas.forEach(fogazza => {
-        saboresData[fogazza.nome_fogazza] = Array(24).fill(0);
-      });
-      
       dados.forEach(atendimento => {
         if (atendimento.comprado_em && atendimento.itens) {
           const data = new Date(atendimento.comprado_em);
           const hora = data.getHours();
-          
+          const totalQtd = atendimento.itens.reduce((acc, item) => acc + (item.quantidade || 0), 0);
+          vendasPorHora[hora] += totalQtd;
+        }
+      });
+      return { 'Todas as Vendas': vendasPorHora };
+    } else {
+      const saboresData = {};
+      fogazzas.forEach(fogazza => {
+        saboresData[fogazza.nome_fogazza] = Array(24).fill(0);
+      });
+      dados.forEach(atendimento => {
+        if (atendimento.comprado_em && atendimento.itens) {
+          const data = new Date(atendimento.comprado_em);
+          const hora = data.getHours();
           atendimento.itens.forEach(item => {
             const fogazza = fogazzas.find(f => f.id_fogazza === item.id_fogazza);
             if (fogazza) {
               const nomeFogazza = fogazza.nome_fogazza;
-              const valorItem = (fogazza.preco_fogazza || 0) * (item.quantidade || 0);
-              saboresData[nomeFogazza][hora] += valorItem;
+              saboresData[nomeFogazza][hora] += item.quantidade || 0;
             }
           });
         }
       });
-
       return saboresData;
     }
   };
@@ -108,7 +102,7 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
     datasets: datasets,
   };
 
-  // click handler: report hour and/or sabor depending on mode
+  // click handler: report hour and/or sabor depending on mode, igual CardVendaHora
   const handleChartClick = (event, elements, chart) => {
     if (!elements || elements.length === 0) return;
     const index = elements[0].index;
@@ -117,10 +111,13 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
     const hour = parseInt(hourLabel.split(':')[0], 10);
     const datasetLabel = chartData.datasets[datasetIndex]?.label;
     if (modoVisualizacao === 'POR_SABOR' && onClickPoint) {
+      // Filtro por sabor e hora
       onClickPoint({ sabor: datasetLabel, hour });
     } else if (onClickPoint) {
+      // Filtro só por hora
       onClickPoint({ hour });
     } else {
+      // Scroll para tabela
       const el = document.getElementById('historico-tabela');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -180,10 +177,7 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
           label: function(context) {
             const valor = context.parsed.y;
             const label = modoVisualizacao === 'POR_SABOR' ? `${context.dataset.label}: ` : '';
-            return `${label}${new Intl.NumberFormat('pt-BR', {
-              style: 'currency',
-              currency: 'BRL'
-            }).format(valor)}`;
+            return `${label}${valor} unidade${valor === 1 ? '' : 's'}`;
           }
         }
       }
@@ -207,13 +201,7 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
           },
           maxTicksLimit: 6,
           callback: function(value) {
-            return new Intl.NumberFormat('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-              notation: value >= 1000 ? 'compact' : 'standard'
-            }).format(value);
+            return `${value} un.`;
           }
         }
       },
@@ -274,7 +262,7 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
     >
       <div className="px-4 pt-4 pb-2 border-b border-gray-100 flex items-center justify-between">
         <h3 className="text-base md:text-lg font-medium text-gray-600 font-poppins">
-          Vendas por Horário
+          Quantidade vendida por horário
         </h3>
         
         <div className="flex items-center bg-gray-100 rounded-lg p-1">

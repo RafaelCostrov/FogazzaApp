@@ -4,14 +4,14 @@ import { IoBagHandle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
 import { atendimentoService } from '../services/api'
 
-function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], paraViagem = false }) {
+function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], fogazzas = [], paraViagem = false }) {
   const [imprimindo, setImprimindo] = useState(false)
 
   if (!isOpen) return null
 
   const getNomeFogazza = (idFogazza) => {
-    const item = itensSelecionados.find(item => item.id === idFogazza)
-    return item ? item.nome : `Fogazza ID: ${idFogazza}`
+    const fogazza = fogazzas.find(f => f.id_fogazza === idFogazza);
+    return fogazza ? fogazza.nome_fogazza : `Fogazza ID: ${idFogazza}`;
   }
 
   const imprimirSegundaVia = async () => {
@@ -44,7 +44,6 @@ function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], 
         </div>
 
         <div className="space-y-4 mb-6">
-        
         {atendimento?.itens && (
             <div>
               <p className="text-gray-500 text-sm mb-2">Itens:</p>
