@@ -37,7 +37,8 @@ class AtendimentoRepository:
                 # include any atendimento that contains at least one of the selected fogazzas
                 # original implementation required all flavors; change to OR semantics
                 query = query.join(AtendimentoFogazza)
-                query = query.filter(AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
+                query = query.filter(
+                    AtendimentoFogazza.id_fogazza.in_(id_fogazzas))
                 # avoid duplicate atendimentos due to join
                 query = query.distinct()
             if tipo_cliente is not None:

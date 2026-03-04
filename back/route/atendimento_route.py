@@ -24,6 +24,22 @@ def adicionar_atendimento():
         session.close()
 
 
+@atendimento_bp.route('/adicionar-massa', methods=['POST'])
+def adicionar_atendimentos():
+    session = SessionFactory()
+    try:
+        data = request.get_json()
+        lista_atendimentos = data.get('atendimentos')
+        atendimento_service = AtendimentoService(session)
+        resultado = atendimento_service.adicionar_atendimentos(
+            lista_atendimentos)
+        return jsonify(resultado), 201
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+    finally:
+        session.close()
+
+
 @atendimento_bp.route('/listar', methods=['GET'])
 def listar_atendimentos():
     session = SessionFactory()

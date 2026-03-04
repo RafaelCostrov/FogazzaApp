@@ -15,7 +15,7 @@ class AtendimentoService():
         self.repositorio = AtendimentoRepository(session)
         self.repositorio_fogazza = FogazzaRepository(session)
 
-    def adicionar_atendimento(self, tipo_cliente, fogazzas, viagem):
+    def adicionar_atendimento(self, tipo_cliente, fogazzas, viagem, comprado_em=None):
         try:
             preco_final = 0
             itens = []
@@ -30,7 +30,8 @@ class AtendimentoService():
                     quantidade=quantidade
                 ))
 
-            comprado_em = datetime.datetime.now()
+            if comprado_em is None:
+                comprado_em = datetime.datetime.now()
 
             if tipo_cliente.upper() == "EQUIPE":
                 preco_final = 0
@@ -58,6 +59,20 @@ class AtendimentoService():
                     } for item in atendimento.itens
                 ]
             }
+        except Exception as e:
+            raise e
+
+    def adicionar_atendimentos(self, lista_atendimentos):
+        try:
+            atendimentos = []
+            for data in lista_atendimentos:
+                tipo_cliente = data.get('tipo_cliente')
+                fogazzas = data.get('fogazzas')
+                viagem = data.get('viagem')
+                horario = data.get('comprado_em')
+                atendimentos.append(self.adicionar_atendimento(
+                    tipo_cliente, fogazzas, viagem, comprado_em=horario))
+            return atendimentos
         except Exception as e:
             raise e
 
