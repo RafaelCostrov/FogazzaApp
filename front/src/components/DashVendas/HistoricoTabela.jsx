@@ -8,14 +8,14 @@ import { LuPizza } from "react-icons/lu";
 import { TbSausage } from "react-icons/tb";
 import ModalImpressao from '../ModalImpressao';
 
-function Paginacao({ paginaAtual, setPaginaAtual, totalPaginas, totalItens, itensPorPagina }) {
-  const inicioItem = (paginaAtual - 1) * itensPorPagina + 1;
-  const fimItem = Math.min(paginaAtual * itensPorPagina, totalItens);
+function Paginacao({ paginaAtual, setPaginaAtual, totalPaginas, totalItens, itensPorPagina, itensMostrados = 0 }) {
+  const inicioItem = totalItens === 0 ? 0 : (paginaAtual - 1) * itensPorPagina + 1;
+  const fimItem = totalItens === 0 ? 0 : Math.min((paginaAtual - 1) * itensPorPagina + itensMostrados, totalItens);
   
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
       <div className="text-sm text-gray-600">
-        Mostrando {inicioItem} a {fimItem} de {totalItens} itens
+        {totalItens === 0 ? 'Nenhum item encontrado' : `Mostrando ${inicioItem} a ${fimItem} de ${totalItens} itens`}
       </div>
       <div className="flex items-center gap-2">
         <button
@@ -91,9 +91,21 @@ export default function HistoricoTabela({ filtros = {}, dados: dadosIniciais = [
       const response = await atendimentoService.filtrar(filtrosComPaginacao);
       
       if (response && response.atendimentos) {
-        setDados(response.atendimentos || []);
-        setTotalItens(response.total || 0);
-        setTotalPages(Math.ceil((response.total || 0) / ITENS_POR_PAGINA));
+        const atendimentos = response.atendimentos || [];
+        setDados(atendimentos);
+        
+        // Calcula o total real baseado nos itens recebidos
+        let totalReal;
+        if (atendimentos.length < ITENS_POR_PAGINA) {
+          // Se recebeu menos itens que o limite, é a última página
+          totalReal = (pagina - 1) * ITENS_POR_PAGINA + atendimentos.length;
+        } else {
+          // Senão, usa o total reportado pela API
+          totalReal = response.total || atendimentos.length;
+        }
+        
+        setTotalItens(totalReal);
+        setTotalPages(Math.ceil(totalReal / ITENS_POR_PAGINA));
       } else {
         const dados = Array.isArray(response) ? response : [];
         setDados(dados);
@@ -310,6 +322,7 @@ export default function HistoricoTabela({ filtros = {}, dados: dadosIniciais = [
             totalPaginas={totalPages}
             totalItens={totalItens}
             itensPorPagina={ITENS_POR_PAGINA}
+            itensMostrados={dados.length}
           />
         </div>
       </motion.div>

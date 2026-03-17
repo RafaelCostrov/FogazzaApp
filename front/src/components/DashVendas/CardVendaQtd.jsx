@@ -102,31 +102,11 @@ export default function CardVendaQtd({ dados = [], fogazzas = [], onClickPoint }
     datasets: datasets,
   };
 
-  // click handler: report hour and/or sabor depending on mode, igual CardVendaHora
-  const handleChartClick = (event, elements, chart) => {
-    if (!elements || elements.length === 0) return;
-    const index = elements[0].index;
-    const datasetIndex = elements[0].datasetIndex;
-    const hourLabel = labels[index];
-    const hour = parseInt(hourLabel.split(':')[0], 10);
-    const datasetLabel = chartData.datasets[datasetIndex]?.label;
-    if (modoVisualizacao === 'POR_SABOR' && onClickPoint) {
-      // Filtro por sabor e hora
-      onClickPoint({ sabor: datasetLabel, hour });
-    } else if (onClickPoint) {
-      // Filtro só por hora
-      onClickPoint({ hour });
-    } else {
-      // Scroll para tabela
-      const el = document.getElementById('historico-tabela');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    onClick: handleChartClick,
     layout: {
       padding: {
         top: 10,

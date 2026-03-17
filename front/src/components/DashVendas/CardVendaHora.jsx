@@ -10,10 +10,18 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
   const [modoVisualizacao, setModoVisualizacao] = useState('TODAS'); 
 
 
+  const extrairSabor = (nomeFogazza) => {
+    if (!nomeFogazza) return '';
+    const nome = nomeFogazza.trim().toLowerCase();
+    if (nome.includes('queijo')) return 'Queijo';
+    if (nome.includes('calabresa')) return 'Calabresa';
+    if (nome.includes('pizza')) return 'Pizza';
+    return nomeFogazza;
+  };
+
   const processarDadosPorHora = () => {
     if (modoVisualizacao === 'TODAS') {
       const vendasPorHora = Array(24).fill(0);
-      
       dados.forEach(atendimento => {
         if (atendimento.comprado_em) {
           const data = new Date(atendimento.comprado_em);
@@ -21,31 +29,27 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
           vendasPorHora[hora] += atendimento.preco_total || 0;
         }
       });
-
       return { 'Todas as Vendas': vendasPorHora };
     } else {
       const saboresData = {};
-      
       fogazzas.forEach(fogazza => {
-        saboresData[fogazza.nome_fogazza] = Array(24).fill(0);
+        const sabor = extrairSabor(fogazza.nome_fogazza);
+        saboresData[sabor] = Array(24).fill(0);
       });
-      
       dados.forEach(atendimento => {
         if (atendimento.comprado_em && atendimento.itens) {
           const data = new Date(atendimento.comprado_em);
           const hora = data.getHours();
-          
           atendimento.itens.forEach(item => {
             const fogazza = fogazzas.find(f => f.id_fogazza === item.id_fogazza);
             if (fogazza) {
-              const nomeFogazza = fogazza.nome_fogazza;
+              const sabor = extrairSabor(fogazza.nome_fogazza);
               const valorItem = (fogazza.preco_fogazza || 0) * (item.quantidade || 0);
-              saboresData[nomeFogazza][hora] += valorItem;
+              saboresData[sabor][hora] += valorItem;
             }
           });
         }
       });
-
       return saboresData;
     }
   };
@@ -64,15 +68,15 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
       border: '#D1A24B',
       background: 'rgba(209, 162, 75, 0.08)'
     },
-    'Fogazza Queijo': {
+    'Queijo': {
       border: '#D1A24B',
       background: 'rgba(209, 162, 75, 0.08)'
     },
-    'Fogazza Calabresa': {
-      border: '#056839', 
+    'Calabresa': {
+      border: '#056839',
       background: 'rgba(5, 104, 57, 0.08)'
     },
-    'Fogazza Pizza': {
+    'Pizza': {
       border: '#973E36',
       background: 'rgba(151, 62, 54, 0.08)'
     }
@@ -108,28 +112,11 @@ export default function CardVendaHora({ dados = [], fogazzas = [], onClickPoint 
     datasets: datasets,
   };
 
-  // click handler: report hour and/or sabor depending on mode
-  const handleChartClick = (event, elements, chart) => {
-    if (!elements || elements.length === 0) return;
-    const index = elements[0].index;
-    const datasetIndex = elements[0].datasetIndex;
-    const hourLabel = labels[index];
-    const hour = parseInt(hourLabel.split(':')[0], 10);
-    const datasetLabel = chartData.datasets[datasetIndex]?.label;
-    if (modoVisualizacao === 'POR_SABOR' && onClickPoint) {
-      onClickPoint({ sabor: datasetLabel, hour });
-    } else if (onClickPoint) {
-      onClickPoint({ hour });
-    } else {
-      const el = document.getElementById('historico-tabela');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    onClick: handleChartClick,
     layout: {
       padding: {
         top: 10,

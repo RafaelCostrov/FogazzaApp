@@ -59,7 +59,7 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
 
       toast.info('Enviando para impressão...')
       try {
-        await atendimentoService.imprimir(response.id_atendimento)
+        await atendimentoService.imprimir(response.id_atendimento, 1)
         toast.success('Recibo impresso!')
       } catch (printError) {
         console.error('Erro ao imprimir:', printError)
@@ -130,6 +130,8 @@ function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
           <IconCheckboxes
             checked={paraViagem}
             onChange={(e) => setParaViagem(e.target.checked)}
+            title="Marque se o atendimento é para viagem"
+
           />
         </div>
 

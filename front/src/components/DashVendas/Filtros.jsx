@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { FaCalendarDay } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { FiX } from "react-icons/fi";
 
 export default function Filtros({ periodo, setPeriodo }) {
     const renderPeriodoSelecionado = () => {
@@ -16,6 +17,13 @@ export default function Filtros({ periodo, setPeriodo }) {
             <span className="inline-block bg-green-igreja/10 text-green-900 px-2 py-1 rounded">
               Período filtrado: <b>{inicio}</b> até <b>{fim}</b>
             </span>
+            <button
+              onClick={handleHoje}
+              className="text-gray-400 hover:text-gray-600 transition"
+              aria-label="Limpar filtro e voltar para Hoje"
+            >
+              <FiX size={24} />
+            </button>
           </div>
         );
       }

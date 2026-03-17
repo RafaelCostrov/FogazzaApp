@@ -10,40 +10,44 @@ export default function CardVendaSabor({ dados = [], fogazzas = [], onSaborClick
 
 
 
-  const gerarCoresGrafico = (quantidade) => {
-    const corPorSabor = {
-      'Fogazza Queijo': '#D1A24B',      
-      'Fogazza Calabresa': '#056839',   
-      'Fogazza Pizza': '#973E36',       
-    };
+  const extrairSabor = (nomeFogazza) => {
+    if (!nomeFogazza) return '';
+    const nome = nomeFogazza.trim().toLowerCase();
+    if (nome.includes('queijo')) return 'Queijo';
+    if (nome.includes('calabresa')) return 'Calabresa';
+    if (nome.includes('pizza')) return 'Pizza';
+    return nomeFogazza;
+  };
 
-    const sabores = processarDadosPorSabor().labels;
-    return sabores.map(sabor => corPorSabor[sabor] || '#888888').slice(0, quantidade);
+  const gerarCoresGrafico = (quantidade, saboresPadronizados) => {
+    const corPorSabor = {
+      'Queijo': '#D1A24B',      
+      'Calabresa': '#056839',   
+      'Pizza': '#973E36',       
+    };
+    return saboresPadronizados.map(sabor => corPorSabor[sabor] || '#888888').slice(0, quantidade);
   };
 
   const processarDadosPorSabor = () => {
     const vendasPorSabor = {};
-    
     dados.forEach(atendimento => {
       if (atendimento.itens && Array.isArray(atendimento.itens)) {
         atendimento.itens.forEach(item => {
           const fogazza = fogazzas.find(f => f.id_fogazza === item.id_fogazza);
           const nomeFogazza = fogazza ? fogazza.nome_fogazza : `${item.id_fogazza}`;
+          const sabor = extrairSabor(nomeFogazza);
           const quantidade = item.quantidade || 0;
-          
-          if (vendasPorSabor[nomeFogazza]) {
-            vendasPorSabor[nomeFogazza] += quantidade;
+          if (vendasPorSabor[sabor]) {
+            vendasPorSabor[sabor] += quantidade;
           } else {
-            vendasPorSabor[nomeFogazza] = quantidade;
+            vendasPorSabor[sabor] = quantidade;
           }
         });
       }
     });
-
     const saboresOrdenados = Object.entries(vendasPorSabor)
       .sort(([,a], [,b]) => b - a)
       .slice(0, 8);
-
     return {
       labels: saboresOrdenados.map(([sabor]) => sabor),
       valores: saboresOrdenados.map(([, quantidade]) => quantidade)
@@ -51,7 +55,7 @@ export default function CardVendaSabor({ dados = [], fogazzas = [], onSaborClick
   };
 
   const dadosProcessados = processarDadosPorSabor();
-  const cores = gerarCoresGrafico(dadosProcessados.labels.length);
+  const cores = gerarCoresGrafico(dadosProcessados.labels.length, dadosProcessados.labels);
 
   const chartData = {
     labels: dadosProcessados.labels,
@@ -138,18 +142,7 @@ export default function CardVendaSabor({ dados = [], fogazzas = [], onSaborClick
     );
   }
 
-  // click no gráfico
-  const handleChartClick = (event, elements, chart) => {
-    if (!elements || elements.length === 0) return;
-    const index = elements[0].index;
-    const sabor = dadosProcessados.labels[index];
-    if (onSaborClick && sabor) {
-      onSaborClick(sabor);
-    } else {
-      const el = document.getElementById('historico-tabela');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
 
   return (
     <motion.div
@@ -165,10 +158,7 @@ export default function CardVendaSabor({ dados = [], fogazzas = [], onSaborClick
         {dadosProcessados.labels.length > 0 ? (
           <Doughnut 
             data={chartData} 
-            options={{
-              ...options,
-              onClick: handleChartClick
-            }} 
+            options={options}
           />
         ) : (
           <div className="text-center text-gray-500">

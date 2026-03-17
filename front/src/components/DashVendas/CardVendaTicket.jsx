@@ -38,13 +38,12 @@ export default function CardVendaTicket({ dados = [], onTipoClick }) {
   }
   
   function gerarCoresGrafico(quantidade) {
-    // Mesmo padrão do CardVendaSabor
+    
     const coresPrimarias = [
-      '#D1A24B',  // dourado
-      '#056839',  // verde
-      '#973E36',  // vinho
+      '#D1A24B',  
+      '#056839', 
+      '#973E36', 
     ];
-    // Repete as cores se houver mais tipos
     const cores = [];
     for (let i = 0; i < quantidade; i++) {
       cores.push(coresPrimarias[i % coresPrimarias.length]);
@@ -77,21 +76,7 @@ export default function CardVendaTicket({ dados = [], onTipoClick }) {
   };
 
 
-  // click no gráfico - usa API do Chart para garantir detecção imediata
-  const handleChartClick = (event, elements, chart) => {
-    // chart vem como terceiro parâmetro na callback do react-chartjs-2
-    if (!chart) return;
-    const target = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
-    if (!target || target.length === 0) return;
-    const index = target[0].index;
-    const tipo = dadosProcessados.tipos[index];
-    if (onTipoClick && tipo) {
-      onTipoClick(tipo);
-    } else {
-      const el = document.getElementById('historico-tabela');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
 
   const options = {
     responsive: true,
@@ -125,7 +110,6 @@ export default function CardVendaTicket({ dados = [], onTipoClick }) {
         }
       }
     },
-    onClick: handleChartClick,
     scales: {
       y: {
         beginAtZero: true,

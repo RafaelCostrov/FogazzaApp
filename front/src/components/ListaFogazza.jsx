@@ -21,14 +21,14 @@ function ListaFogazza({ nome, preco, quantidade, onAdicionar, onRemover }) {
             onClick={onRemover}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-400 text-slate-600 hover:border-red-igreja hover:text-red-igreja transition"
           >
-            <AiOutlineMinus size={12} />
+            <AiOutlineMinus size={12} title='Remover'/>
           </button>
           <span className="text-center text-xl font-semibold text-slate-800 min-w-6">{quantidade}</span>
           <button
             onClick={onAdicionar}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-green-igreja text-white hover:bg-green-700 transition"
           >
-            <AiOutlinePlus size={12} />
+            <AiOutlinePlus size={12} title='Adicionar' />
           </button>
         </div>
       </div>

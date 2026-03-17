@@ -6,19 +6,31 @@ import { atendimentoService } from '../services/api'
 
 function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], fogazzas = [], paraViagem = false }) {
   const [imprimindo, setImprimindo] = useState(false)
+  const [segundaViaImpressa, setSegundaViaImpressa] = useState(false)
 
   if (!isOpen) return null
 
+  // Busca o nome da fogazza pelo id, usando itensSelecionados ou fogazzas
   const getNomeFogazza = (idFogazza) => {
+    // Tenta buscar em itensSelecionados
+    const itemSelecionado = itensSelecionados.find(f => f.id === idFogazza);
+    if (itemSelecionado && itemSelecionado.nome) {
+      return itemSelecionado.nome;
+    }
+    // Tenta buscar em fogazzas
     const fogazza = fogazzas.find(f => f.id_fogazza === idFogazza);
-    return fogazza ? fogazza.nome_fogazza : `Fogazza ID: ${idFogazza}`;
+    if (fogazza && fogazza.nome_fogazza) {
+      return fogazza.nome_fogazza;
+    }
+    return `Fogazza ID: ${idFogazza}`;
   }
 
   const imprimirSegundaVia = async () => {
     try {
       setImprimindo(true)
-      await atendimentoService.imprimir(atendimento.id_atendimento)
+      await atendimentoService.imprimir(atendimento.id_atendimento, 2)
       toast.success('Segunda via impressa com sucesso!')
+      setSegundaViaImpressa(true)
     } catch (error) {
       console.error('Erro ao imprimir segunda via:', error)
       toast.error('Erro ao imprimir segunda via. Verifique a impressora.')
@@ -36,7 +48,13 @@ function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], 
             <h2 className="text-xl font-semibold text-green-igreja">Atendimento Finalizado - {atendimento?.id_atendimento}</h2>
           </div>
           <button
-            onClick={onClose}
+            onClick={() => {
+              if (!segundaViaImpressa) {
+                toast.warning('É necessário imprimir a segunda via!');
+                return;
+              }
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 transition"
           >
             <HiXMark size={24} />
@@ -81,19 +99,19 @@ function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], 
         </div>
 
         <div className="flex gap-3">
-          <button
+          {/* <button
             onClick={onClose}
             className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition"
           >
             Fechar
-          </button>
+          </button> */}
           <button
             onClick={imprimirSegundaVia}
-            disabled={imprimindo}
+            disabled={imprimindo || segundaViaImpressa}
             className="flex-1 px-4 py-3 bg-green-igreja text-white rounded-xl font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <HiPrinter size={18} />
-            {imprimindo ? 'Imprimindo...' : 'Segunda Via'}
+            {imprimindo ? 'Imprimindo...' : segundaViaImpressa ? 'Segunda Via Impressa' : 'Segunda Via'}
           </button>
         </div>
       </div>
