@@ -173,7 +173,7 @@ class AtendimentoService():
         except Exception as e:
             raise e
 
-    def imprimir_atendimento(self, id_atendimento):
+    def imprimir_atendimento(self, id_atendimento, via=None):
         try:
             atendimento = self.repositorio.filtrar_atendimento_por_id(
                 id_atendimento)
@@ -192,9 +192,15 @@ class AtendimentoService():
             # p.text("-" * 16 + "\n")
             p.set(custom_size=True, width=1, height=1, bold=False)
             if atendimento.viagem:
-                p.text("Viagem: SIM\n\n")
+                if via:
+                    p.text(f"Viagem: SIM - Via: {via}/2\n\n")
+                else:
+                    p.text("Viagem: SIM\n\n")
             else:
-                p.text("Viagem: NAO\n\n")
+                if via:
+                    p.text(f"Viagem: NAO - Via: {via}/2\n\n")
+                else:
+                    p.text("Viagem: NAO\n\n")
 
             p.set(align='left')
             for item in atendimento.itens:

@@ -147,8 +147,9 @@ def imprimir_atendimento():
     try:
         data = request.get_json()
         id_atendimento = data.get('id_atendimento')
+        via = data.get('via')
         atendimento_service = AtendimentoService(session)
-        atendimento_service.imprimir_atendimento(id_atendimento)
+        atendimento_service.imprimir_atendimento(id_atendimento, via)
         return jsonify({"mensagem": "Recibo impresso com sucesso!"}), 200
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
