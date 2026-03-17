@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
@@ -7,7 +8,13 @@ load_dotenv()
 Base = declarative_base()
 
 SENHA_BD = os.getenv("SENHA_BD")
-DATABASE_URL = f"mysql+mysqlconnector://root:{SENHA_BD}@localhost/fogazza"
+DATABASE_URL = URL.create(
+    "mysql+mysqlconnector",
+    username="root",
+    password=SENHA_BD,
+    host="localhost",
+    database="fogazza",
+)
 
 engine = create_engine(
     DATABASE_URL,
