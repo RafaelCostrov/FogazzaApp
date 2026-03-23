@@ -118,3 +118,11 @@ class AtendimentoRepository:
         except Exception as e:
             self.session.rollback()
             raise e
+
+    def filtrar_por_data(self, data):
+        try:
+            atendimentos = self.session.query(Atendimento).filter(
+                func.date(Atendimento.comprado_em) == data).all()
+            return atendimentos
+        except Exception as e:
+            raise e

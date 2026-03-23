@@ -155,3 +155,81 @@ def imprimir_atendimento():
         return jsonify({"erro": str(e)}), 400
     finally:
         session.close()
+
+
+@atendimento_bp.route('/imprimir-relatorio', methods=['POST'])
+def imprimir_relatorio():
+    session = SessionFactory()
+    try:
+        data = request.get_json()
+        id_atendimento = data.get('id_atendimento')
+        id_fogazzas = data.get('id_fogazzas')
+        tipo_cliente = data.get('tipo_cliente')
+        preco_min = data.get('preco_min')
+        preco_max = data.get('preco_max')
+        data_hora_inicio = data.get('data_hora_min')
+        data_hora_fim = data.get('data_hora_max')
+        atendimento_service = AtendimentoService(session)
+        arquivo = atendimento_service.imprimir_relatorio(
+            id_atendimento=id_atendimento,
+            id_fogazzas=id_fogazzas,
+            tipo_cliente=tipo_cliente,
+            preco_min=preco_min,
+            preco_max=preco_max,
+            data_hora_inicio=data_hora_inicio,
+            data_hora_fim=data_hora_fim
+        )
+
+        agora = datetime.now()
+        hora = agora.strftime("%H-%M-%S")
+        nome_excel = f"Atendimentos_{hora}.xlsx"
+
+        return send_file(
+            arquivo,
+            download_name=nome_excel,
+            as_attachment=True,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+    finally:
+        session.close()
+
+
+@atendimento_bp.route('/imprimir-relatorio-agregado', methods=['POST'])
+def imprimir_relatorio_agregado():
+    session = SessionFactory()
+    try:
+        data = request.get_json()
+        data_1 = data.get('data_1')
+        data_2 = data.get('data_2')
+        missa_11_1 = data.get('missa_11_1')
+        missa_11_2 = data.get('missa_11_2')
+        missa_17_1 = data.get('missa_17_1')
+        missa_17_2 = data.get('missa_17_2')
+        atendimento_service = AtendimentoService(session)
+        arquivo = atendimento_service.imprimir_relatorio_agregado(
+            data_1=data_1,
+            data_2=data_2,
+            missa_11_1=missa_11_1,
+            missa_11_2=missa_11_2,
+            missa_17_1=missa_17_1,
+            missa_17_2=missa_17_2
+        )
+
+        agora = datetime.now()
+        hora = agora.strftime("%H-%M-%S")
+        nome_excel = f"Atendimentos_{hora}.xlsx"
+
+        return send_file(
+            arquivo,
+            download_name=nome_excel,
+            as_attachment=True,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
+    finally:
+        session.close()
