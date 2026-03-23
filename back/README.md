@@ -1,5 +1,9 @@
 # API Fogazza
 
+## Base URL
+
+- Desenvolvimento local: `http://127.0.0.1:5000`
+
 ## Fogazza
 
 ### `POST /fogazza/adicionar`
@@ -9,8 +13,8 @@ Adiciona uma nova fogazza.
 **Recebe:**
 ```json
 {
-    "nome_fogazza": "Calabresa", // string
-    "preco_fogazza": 15.00        // float
+    "nome_fogazza": "Calabresa",
+    "preco_fogazza": 15.0
 }
 ```
 
@@ -19,9 +23,10 @@ Adiciona uma nova fogazza.
 {
     "mensagem": "Fogazza adicionada com sucesso!",
     "fogazza": {
-        "id_fogazza": 1,            // int
-        "nome_fogazza": "Calabresa", // string
-        "preco_fogazza": 15.00      // float
+        "id_fogazza": 1,
+        "nome_fogazza": "Calabresa",
+        "preco_fogazza": 15.0,
+        "ativo": true
     }
 }
 ```
@@ -30,15 +35,16 @@ Adiciona uma nova fogazza.
 
 ### `GET /fogazza/listar`
 
-Lista todas as fogazzas disponíveis.
+Lista todas as fogazzas ativas.
 
 **Resposta (200):**
 ```json
 [
     {
-        "id_fogazza": 1,            // int
-        "nome_fogazza": "Calabresa", // string
-        "preco_fogazza": 15.00      // float
+        "id_fogazza": 1,
+        "nome_fogazza": "Calabresa",
+        "preco_fogazza": 15.0,
+        "ativo": true
     }
 ]
 ```
@@ -47,12 +53,12 @@ Lista todas as fogazzas disponíveis.
 
 ### `DELETE /fogazza/remover`
 
-Remove uma fogazza pelo ID.
+Remove (inativa) uma fogazza pelo ID.
 
 **Recebe:**
 ```json
 {
-    "id_fogazza": 1 // int
+    "id_fogazza": 1
 }
 ```
 
@@ -68,37 +74,38 @@ Remove uma fogazza pelo ID.
 ## Atendimento
 
 Notas:
-- Os valores de `tipo_cliente` são strings em MAIÚSCULAS: `EQUIPE`, `VISITANTE`, `VOLUNTARIO`.
+- `tipo_cliente` deve ser enviado em maiúsculo: `EQUIPE`, `VISITANTE`, `VOLUNTARIO`.
+- Se `tipo_cliente` for `EQUIPE`, o `preco_total` do atendimento fica `0`.
 
 ### `POST /atendimento/adicionar`
 
-Adiciona um novo atendimento. Se `tipo_cliente` for `EQUIPE`, o `preco_total` será 0.
+Adiciona um atendimento.
 
 **Recebe:**
 ```json
 {
-    "tipo_cliente": "VISITANTE",             // string (opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
+    "tipo_cliente": "VISITANTE",
     "fogazzas": [
-        { "id_fogazza": 1, "quantidade": 2 }   // list object: id_fogazza -> int, quantidade -> int
+        { "id_fogazza": 1, "quantidade": 2 }
     ],
-    "viagem": false                            // boolean
+    "viagem": false
 }
 ```
 
-**Resposta (201):** (retorna o atendimento criado com campos adicionais)
+**Resposta (201):**
 ```json
 {
-    "id_atendimento": 1,                         // int
-    "tipo_cliente": "VISITANTE",               // string
-    "preco_total": 30.00,                        // float
-    "comprado_em": "2026-02-19 14:30:00",     // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "viagem": false,                             // boolean
-    "ativo": true,                               // boolean
+    "id_atendimento": 1,
+    "tipo_cliente": "VISITANTE",
+    "preco_total": 30.0,
+    "comprado_em": "2026-02-19 14:30:00",
+    "viagem": false,
+    "ativo": true,
     "itens": [
         {
-            "id_fogazza": 1,                         // int
-            "quantidade": 2,                         // int
-            "preco_fogazza": 15.00                    // float
+            "id_fogazza": 1,
+            "quantidade": 2,
+            "preco_fogazza": 15.0
         }
     ]
 }
@@ -106,20 +113,63 @@ Adiciona um novo atendimento. Se `tipo_cliente` for `EQUIPE`, o `preco_total` se
 
 ---
 
+### `POST /atendimento/adicionar-massa`
+
+Adiciona vários atendimentos de uma vez.
+
+**Recebe:**
+```json
+{
+    "atendimentos": [
+        {
+            "tipo_cliente": "VISITANTE",
+            "fogazzas": [
+                { "id_fogazza": 1, "quantidade": 2 }
+            ],
+            "viagem": false,
+            "comprado_em": "2026-02-19 14:30:00"
+        }
+    ]
+}
+```
+
+**Resposta (201):**
+```json
+[
+    {
+        "id_atendimento": 1,
+        "tipo_cliente": "VISITANTE",
+        "preco_total": 30.0,
+        "comprado_em": "2026-02-19 14:30:00",
+        "viagem": false,
+        "ativo": true,
+        "itens": [
+            {
+                "id_fogazza": 1,
+                "quantidade": 2,
+                "preco_fogazza": 15.0
+            }
+        ]
+    }
+]
+```
+
+---
+
 ### `GET /atendimento/listar`
 
-Lista todos os atendimentos. (Resposta construída pela rota; contém os campos básicos abaixo.)
+Lista atendimentos ativos.
 
 **Resposta (200):**
 ```json
 [
     {
-        "id_atendimento": 1,                       // int
-        "tipo_cliente": "VISITANTE",             // string
-        "preco_total": 30.00,                      // float
-        "comprado_em": "2026-02-19 14:30:00",   // string
+        "id_atendimento": 1,
+        "tipo_cliente": "VISITANTE",
+        "preco_total": 30.0,
+        "comprado_em": "2026-02-19 14:30:00",
         "itens": [
-            { "id_fogazza": 1, "quantidade": 2 }  // id_fogazza -> int, quantidade -> int
+            { "id_fogazza": 1, "quantidade": 2 }
         ]
     }
 ]
@@ -129,42 +179,43 @@ Lista todos os atendimentos. (Resposta construída pela rota; contém os campos 
 
 ### `POST /atendimento/filtrar`
 
-Filtra atendimentos com paginação e ordenação. Todos os campos são opcionais.
+Filtra atendimentos com paginação e ordenação (campos opcionais).
 
 **Recebe:**
 ```json
 {
-    "id_atendimento": [1, 3],                       // list[int]
-    "tipo_cliente": ["VISITANTE", "EQUIPE"],     // list[string] (opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
-    "preco_min": 10.00,                             // float
-    "preco_max": 100.00,                            // float
-    "data_hora_min": "2025-01-01 00:00:00",       // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "data_hora_max": "2026-12-31 23:59:59",       // string (formato: "YYYY-MM-DD HH:MM:SS")
-    "pagina": 1,                                    // int (default: 1)
-    "limit": 50,                                    // int (default: 50)
-    "order_by": "comprado_em",                    // string (opções: "id_atendimento", "tipo_cliente", "preco_total", "comprado_em")
-    "order_dir": "desc"                           // string (opções: "asc", "desc")
+    "id_atendimento": [1, 3],
+    "id_fogazzas": [1, 2],
+    "tipo_cliente": ["VISITANTE", "EQUIPE"],
+    "preco_min": 10.0,
+    "preco_max": 100.0,
+    "data_hora_min": "2025-01-01 00:00:00",
+    "data_hora_max": "2026-12-31 23:59:59",
+    "pagina": 1,
+    "limit": 50,
+    "order_by": "comprado_em",
+    "order_dir": "desc"
 }
 ```
 
-**Resposta (200):** (retorna um objeto com lista de atendimentos e metadados)
+**Resposta (200):**
 ```json
 {
     "atendimentos": [
         {
-            "id_atendimento": 1,                       // int
-            "tipo_cliente": "VISITANTE",             // string
-            "preco_total": 30.00,                      // float
-            "comprado_em": "2026-02-19 14:30:00",   // string
-            "ativo": true,                             // boolean
+            "id_atendimento": 1,
+            "tipo_cliente": "VISITANTE",
+            "preco_total": 30.0,
+            "comprado_em": "2026-02-19 14:30:00",
+            "ativo": true,
             "itens": [
-                { "id_fogazza": 1, "quantidade": 2, "preco_fogazza": 15.00 }
+                { "id_fogazza": 1, "quantidade": 2, "preco_fogazza": 15.0 }
             ]
         }
     ],
-    "total": 100,                                  // int
-    "total_filtrado": 1,                           // int
-    "valor_total": 30.00                           // float
+    "total": 100,
+    "total_filtrado": 1,
+    "valor_total": 30.0
 }
 ```
 
@@ -172,14 +223,16 @@ Filtra atendimentos com paginação e ordenação. Todos os campos são opcionai
 
 ### `PUT /atendimento/atualizar`
 
-Atualiza um atendimento. Apenas os campos enviados serão alterados. O preço total é recalculado automaticamente ao alterar `fogazzas` ou `tipo_cliente`.
+Atualiza um atendimento.
 
 **Recebe:**
 ```json
 {
-    "id_atendimento": 1,                     // int (obrigatório)
-    "tipo_cliente": "EQUIPE",              // string (opcional, opções: "EQUIPE", "VISITANTE", "VOLUNTARIO")
-    "fogazzas": [ { "id_fogazza": 1, "quantidade": 3 } ] // list object
+    "id_atendimento": 1,
+    "tipo_cliente": "EQUIPE",
+    "fogazzas": [
+        { "id_fogazza": 1, "quantidade": 3 }
+    ]
 }
 ```
 
@@ -192,11 +245,11 @@ Atualiza um atendimento. Apenas os campos enviados serão alterados. O preço to
 
 ### `DELETE /atendimento/remover`
 
-Remove um atendimento e todos os itens vinculados.
+Remove (inativa) um atendimento.
 
 **Recebe:**
 ```json
-{ "id_atendimento": 1 } // int
+{ "id_atendimento": 1 }
 ```
 
 **Resposta (200):**
@@ -208,12 +261,17 @@ Remove um atendimento e todos os itens vinculados.
 
 ### `POST /atendimento/imprimir`
 
-Imprime o recibo de um atendimento na impressora térmica.
+Imprime recibo de um atendimento na impressora térmica.
 
 **Recebe:**
 ```json
-{ "id_atendimento": 1 } // int
+{
+    "id_atendimento": 1,
+    "via": 1
+}
 ```
+
+`via` é opcional (usado para indicar via 1/2 no cupom).
 
 **Resposta (200):**
 ```json
@@ -222,10 +280,55 @@ Imprime o recibo de um atendimento na impressora térmica.
 
 ---
 
+### `POST /atendimento/imprimir-relatorio`
+
+Gera e retorna um arquivo Excel com relatório detalhado/agrupado dos atendimentos filtrados.
+
+**Recebe:**
+```json
+{
+    "id_atendimento": [1, 3],
+    "id_fogazzas": [1, 2],
+    "tipo_cliente": ["VISITANTE"],
+    "preco_min": 10.0,
+    "preco_max": 100.0,
+    "data_hora_min": "2025-01-01 00:00:00",
+    "data_hora_max": "2026-12-31 23:59:59"
+}
+```
+
+**Resposta (200):**
+- Download de arquivo `.xlsx` (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`).
+
+---
+
+### `POST /atendimento/imprimir-relatorio-agregado`
+
+Gera e retorna um relatório agregado de vendas por hora em Excel.
+
+**Recebe:**
+```json
+{
+    "data_1": "2026-02-19",
+    "data_2": "2026-02-20",
+    "missa_11_1": true,
+    "missa_11_2": false,
+    "missa_17_1": true,
+    "missa_17_2": false
+}
+```
+
+**Resposta (200):**
+- Download de arquivo `.xlsx` (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`).
+
+---
+
 ## Erros
 
-Todas as rotas retornam erro no formato abaixo com status **400**:
+Em caso de erro, as rotas retornam:
 
 ```json
 { "erro": "mensagem de erro" }
 ```
+
+com status HTTP `400`.
