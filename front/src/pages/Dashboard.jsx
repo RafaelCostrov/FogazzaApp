@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import { atendimentoService, fogazzaService } from '../services/api';
+import { toast } from 'react-toastify';
 import HistoricoTabela from '../components/DashVendas/HistoricoTabela';
 import Modal from '../components/DashVendas/Modal';
 import MenuFiltro from '../components/DashVendas/MenuFiltro';
@@ -51,6 +52,20 @@ export default function Dashboard() {
     filtrarPorPeriodo();
   }, [periodo]);
 
+  useEffect(() => {
+    if (periodo?.start && periodo?.end) {
+      const fmt = (d) => {
+        const date = new Date(d);
+        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      };
+      setDataMin(fmt(periodo.start));
+      setDataMax(fmt(periodo.end));
+    } else {
+      setDataMin("");
+      setDataMax("");
+    }
+  }, [periodo]);
+
   const filtrarPorPeriodo = async () => {
     try {
       setLoading(true);
@@ -90,6 +105,7 @@ export default function Dashboard() {
       const dados = atendimentosResponse?.atendimentos || atendimentosResponse || [];
       setDadosAtendimentos(dados);
       setFogazzas(fogazzasResponse || []);
+      setFiltros(filtros);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       setErro('Erro ao carregar dados do dashboard');
@@ -112,9 +128,33 @@ export default function Dashboard() {
   const onClickModal = (modalType) => setModal(modalType);
   const onCloseModal = () => setModal("");
 
-  const handleExportarRelatorio = async (formato) => {
-    console.log(`Exportando relatório em formato ${formato}`);
+  const handleExportarRelatorio = async (formato, filtrosParaUsar) => {
     onCloseModal();
+    const camposIgnorados = ['pagina', 'limit', 'order_by', 'order_dir', 'orderBy', 'orderDir', 'page', 'per_page'];
+    try {
+      const fonte = filtrosParaUsar && Object.keys(filtrosParaUsar).length > 0 ? filtrosParaUsar : {};
+      const filtrosLimpos = Object.fromEntries(
+        Object.entries(fonte).filter(
+          ([k, v]) => !camposIgnorados.includes(k) && v !== undefined && v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
+        )
+      );
+      const blob = formato === 'agregado'
+        ? await atendimentoService.exportarRelatorioAgregado(filtrosLimpos)
+        : await atendimentoService.exportarRelatorio(filtrosLimpos);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = formato === 'agregado' ? 'relatorio_agregado.xlsx' : 'relatorio_atendimentos.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Relatório exportado com sucesso!');
+    } catch (e) {
+      toast.error(e.message || 'Erro ao exportar relatório');
+    } finally {
+      onCloseModal();
+    }
   };
 
   const aplicarFiltros = (extra = {}) => {
@@ -144,6 +184,12 @@ export default function Dashboard() {
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   }, [idFogazzas, tipoCliente, periodo.start, periodo.end, isFiltered]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("filtrosDashboard", JSON.stringify(filtros));
+    } catch {}
+  }, [filtros]);
 
   const limparForms = () => {
     setDataInicial("");
@@ -241,7 +287,6 @@ export default function Dashboard() {
               dados={dadosAtendimentos} 
               fogazzas={fogazzas} 
               onSaborClick={(saborNome) => {
-                // Buscar o id_fogazza 
                 const fog = fogazzas.find(f => f.nome_fogazza === saborNome);
                 const id = fog ? fog.id_fogazza : null;
                 if (id) {
@@ -359,11 +404,10 @@ export default function Dashboard() {
       {modal === "exportar" && (
         <Modal
           onCloseModal={onCloseModal}
-          size={"small"}
-          title={"Exportar"}
+          size={"compact"}
+          title={"Exportar Relatório"}
         >
-          <ExportModal onExportar={handleExportarRelatorio} />
-        </Modal>
+<ExportModal onExportar={handleExportarRelatorio} filtrosAtivos={filtros} saborFogazza={saborFogazza} />        </Modal>
       )}
     </div>
   );

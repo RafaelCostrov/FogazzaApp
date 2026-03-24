@@ -3,7 +3,7 @@ import { HiClipboardDocumentList } from 'react-icons/hi2'
 import { toast } from 'react-toastify'
 import { atendimentoService } from '../services/api'
 import ModalImpressao from './ModalImpressao'
-import IconCheckboxes from './Checkbox'
+import IconCheckboxes from './CheckboxViagem'
 
 function Resumo({ itensSelecionados = [], onFinalizarAtendimento }) {
   const [valorRecebido, setValorRecebido] = useState('')

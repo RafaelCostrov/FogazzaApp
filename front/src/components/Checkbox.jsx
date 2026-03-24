@@ -1,17 +1,18 @@
 import Checkbox from '@mui/material/Checkbox';
-import { IoBagHandleOutline } from "react-icons/io5";
-import { IoBagHandle } from "react-icons/io5";
+import { MdCheckBoxOutlineBlank } from "react-icons/md";
+import { IoCheckbox } from "react-icons/io5";
 
-export default function IconCheckboxes({ checked, onChange }) {
+export default function IconCheck({ checked, onChange, title }) {
   return (
-    <Checkbox 
+    <Checkbox
       checked={checked}
       onChange={onChange}
-      icon={<IoBagHandleOutline style={{ color: '#777676', width: '24px', height: '24px' }} />} 
-      checkedIcon={<IoBagHandle style={{ color: '#056839', width: '24px', height: '24px' }} />}
+      icon={<MdCheckBoxOutlineBlank style={{ color: '#777676', width: '24px', height: '24px' }} />} 
+      checkedIcon={<IoCheckbox style={{ color: '#D1A24B', width: '24px', height: '24px' }} />}
+      inputProps={{ 'aria-label': title || 'checkbox' }}
       sx={{
         '&.Mui-checked': {
-          color: '#056839',
+          color: '#D1A24B',
         },
       }}
     />

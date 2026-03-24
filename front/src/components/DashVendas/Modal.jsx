@@ -5,7 +5,7 @@ export default function Modal({ children, onCloseModal, size = "medium", title }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className={`bg-white rounded-lg shadow-xl ${
-        size === "small" ? "w-96" : size === "medium" ? "w-3/4 max-w-4xl" : "w-1/3"
+        size === "small" ? "w-96" : size === "compact" ? "w-[540px] max-w-[95vw]" : size === "medium" ? "w-3/4 max-w-4xl" : "w-1/3"
       } max-h-[80vh] overflow-y-auto`}>
         <div className="flex items-center justify-between gap-3 p-4">
           <div className="flex items-center gap-3">

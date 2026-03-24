@@ -50,8 +50,8 @@ export default function HeaderRelatorio({
             className="flex items-center gap-2 active:scale-95 transition-all duration-200"
             onClick={onClickExportar}
           >
-            Exportar
-            <RiExportFill size={24} title="Exportar" />
+            Exportar Relatório
+            <RiExportFill size={24} title="Exportar Relatório" />
           </button>
           <button
             className="flex items-center gap-2 active:scale-95 transition-all duration-200"

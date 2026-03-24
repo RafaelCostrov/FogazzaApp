@@ -69,14 +69,45 @@ export const atendimentoService = {
   },
 
   async listarTodos() {
-    // Usar o filtrar sem parâmetros para listar todos
     return this.filtrar({
       pagina: 1,
-      limit: 1000, // Limite alto para pegar todos os registros
+      limit: 1000, 
       order_by: "comprado_em",
       order_dir: "desc"
     })
   },
+
+  async exportarRelatorio(filtros) {
+    const response = await fetch(`${API_BASE_URL}/atendimento/imprimir-relatorio`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(filtros),
+      mode: 'cors',
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.erro || 'Erro ao exportar relatório');
+    }
+    return response.blob();
+  },
+
+  async exportarRelatorioAgregado(filtros) {
+    const response = await fetch(`${API_BASE_URL}/atendimento/imprimir-relatorio-agregado`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(filtros),
+      mode: 'cors',
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.erro || 'Erro ao exportar relatório agregado');
+    }
+    return response.blob();
+  },
 }
+
+
 
 export default fogazzaService

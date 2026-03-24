@@ -4,20 +4,17 @@ import { IoBagHandle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
 import { atendimentoService } from '../services/api'
 
-function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], fogazzas = [], paraViagem = false }) {
+function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], fogazzas = [], paraViagem = false, validarImpressao = true }) {
   const [imprimindo, setImprimindo] = useState(false)
   const [segundaViaImpressa, setSegundaViaImpressa] = useState(false)
 
   if (!isOpen) return null
 
-  // Busca o nome da fogazza pelo id, usando itensSelecionados ou fogazzas
   const getNomeFogazza = (idFogazza) => {
-    // Tenta buscar em itensSelecionados
     const itemSelecionado = itensSelecionados.find(f => f.id === idFogazza);
     if (itemSelecionado && itemSelecionado.nome) {
       return itemSelecionado.nome;
     }
-    // Tenta buscar em fogazzas
     const fogazza = fogazzas.find(f => f.id_fogazza === idFogazza);
     if (fogazza && fogazza.nome_fogazza) {
       return fogazza.nome_fogazza;
@@ -49,7 +46,7 @@ function ModalImpressao({ isOpen, onClose, atendimento, itensSelecionados = [], 
           </div>
           <button
             onClick={() => {
-              if (!segundaViaImpressa) {
+              if (validarImpressao && !segundaViaImpressa) {
                 toast.warning('É necessário imprimir a segunda via!');
                 return;
               }

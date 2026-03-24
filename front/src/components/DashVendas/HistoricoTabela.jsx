@@ -331,6 +331,7 @@ export default function HistoricoTabela({ filtros = {}, dados: dadosIniciais = [
         onClose={() => setModalOpen(false)}
         atendimento={atendimentoSelecionado}
         fogazzas={fogazzas}
+        validarImpressao={false}
       />
     </>
   );
