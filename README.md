@@ -14,10 +14,10 @@
 </p>
 
 <p align="center">
-  <a href="#-destaques">Destaques</a> •
-  <a href="#-início-rápido-5-minutos">Início Rápido</a> •
-  <a href="#-execução-por-exe-windows">Execução por EXE</a> •
-  <a href="#-documentação-complementar">Documentação</a>
+  <a href="#funcionalidades">Funcionalidades</a> •
+  <a href="#inicio-rapido">Início Rápido</a> •
+  <a href="#execucao-por-exe-windows">Execução por EXE</a> •
+  <a href="#documentacao-complementar">Documentação</a>
 </p>
 
 ## ✨ Funcionalidades
