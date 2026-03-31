@@ -138,7 +138,7 @@ Como usar:
 
 ## Documentação complementar
 
-- API detalhada: `back/README.md`
+- Guia técnico de backend: `BACKEND.md`
 - Setup adicional para Windows: `SETUP_WINDOWS.md`
 
 ## Observações importantes
