@@ -20,7 +20,7 @@
   <a href="#-documentação-complementar">Documentação</a>
 </p>
 
-##✨ Funcionalidades
+## ✨ Funcionalidades
 
 - Venda ágil para operação do dia a dia
 - Cadastro e gestão de fogazzas ativas
@@ -29,7 +29,7 @@
 - Exportação de relatórios em Excel
 - Inicialização e encerramento por EXE sem terminal aberto
 
-##🛠️ Stack do projeto
+## 🛠️ Stack do projeto
 
 | Camada | Tecnologias |
 | --- | --- |
@@ -39,7 +39,7 @@
 | Relatórios | pandas, openpyxl |
 | Empacotamento | PyInstaller |
 
-##📁 Arquitetura rápida
+## 📁 Arquitetura rápida
 
 ```text
 teste_fogaca/
@@ -51,7 +51,7 @@ teste_fogaca/
   SETUP_WINDOWS.md        Guia de setup para outro PC
 ```
 
-##📦 Início rápido
+## 📦 Início rápido
 
 ### 1) Pré-requisitos
 
@@ -116,7 +116,7 @@ npm run dev
 Aplicação: http://localhost:5173  
 API local: http://127.0.0.1:5000
 
-##📦 Execução por EXE (Windows)
+## 📦 Execução por EXE (Windows)
 
 Para gerar os executáveis:
 
